@@ -535,13 +535,15 @@
             if (!p) return;
 
             // Pixel ViewContent
-            fbq('track', 'ViewContent', {
-                content_ids: [p.id],
-                content_type: 'product',
-                value: p.price,
-                currency: 'BDT',
-                content_name: p.name
-            });
+            try {
+                fbq('track', 'ViewContent', {
+                    content_ids: [p.id],
+                    content_type: 'product',
+                    value: p.price,
+                    currency: 'BDT',
+                    content_name: p.name
+                });
+            } catch (e) { console.warn("Pixel Error:", e); }
 
             document.getElementById('modal-img-main').src = p.img;
             document.getElementById('modal-cat').innerText = p.category ? p.category.replace(/_/g, ' ') : '';
@@ -597,13 +599,15 @@
             if (product) {
                 cart.push(product);
                 // Pixel AddToCart
-                fbq('track', 'AddToCart', {
-                    content_ids: [product.id],
-                    content_type: 'product',
-                    value: product.price,
-                    currency: 'BDT',
-                    content_name: product.name
-                });
+                try {
+                    fbq('track', 'AddToCart', {
+                        content_ids: [product.id],
+                        content_type: 'product',
+                        value: product.price,
+                        currency: 'BDT',
+                        content_name: product.name
+                    });
+                } catch (e) { console.warn("Pixel Error:", e); }
                 localStorage.setItem('cart', JSON.stringify(cart));
                 updateCartUI();
 
