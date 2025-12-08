@@ -418,7 +418,16 @@
             try {
                 const response = await fetch(scriptURL + '?action=getProducts');
                 const data = await response.json();
-                allProducts = Array.isArray(data) ? data : [];
+
+                const rawList = Array.isArray(data) ? data : [];
+                // Patch: Generate IDs if missing
+                allProducts = rawList.map((p, index) => {
+                    if (!p.id || p.id === "null") {
+                        p.id = "gen_" + index + "_" + Date.now();
+                    }
+                    return p;
+                });
+
                 renderHomeProducts(allProducts);
 
                 // Fetch Hero Images
@@ -531,53 +540,66 @@
 
         // --- Modal Logic ---
         function openProductModal(id) {
-            const p = allProducts.find(x => x.id == id);
-            if (!p) return;
-
-            // Pixel ViewContent
             try {
-                fbq('track', 'ViewContent', {
-                    content_ids: [p.id],
-                    content_type: 'product',
-                    value: p.price,
-                    currency: 'BDT',
-                    content_name: p.name
-                });
-            } catch (e) { console.warn("Pixel Error:", e); }
+                const p = allProducts.find(x => x.id == id);
+                if (!p) return;
 
-            document.getElementById('modal-img-main').src = p.img;
-            document.getElementById('modal-cat').innerText = p.category ? p.category.replace(/_/g, ' ') : '';
-            document.getElementById('modal-title').innerText = p.name;
-            document.getElementById('modal-desc').innerText = p.description || 'বিস্তারিত শীঘ্রই আসছে...';
-            document.getElementById('modal-price').innerText = '৳' + p.price;
+                // Pixel ViewContent
+                try {
+                    if (typeof fbq === 'function') {
+                        fbq('track', 'ViewContent', {
+                            content_ids: [p.id],
+                            content_type: 'product',
+                            value: p.price,
+                            currency: 'BDT',
+                            content_name: p.name
+                        });
+                    }
+                } catch (e) { console.warn("Pixel Error:", e); }
 
-            const regPrice = p.regular_price || p.price;
-            const discount = Math.round(((regPrice - p.price) / regPrice) * 100);
+                const modal = document.getElementById('product-modal');
+                if (!modal) return;
 
-            if (discount > 0) {
-                document.getElementById('modal-reg-price').innerText = '৳' + regPrice;
-                document.getElementById('modal-reg-price').classList.remove('hidden');
-                document.getElementById('modal-discount-badge').innerText = `SAVE ${discount}% `;
-                document.getElementById('modal-discount-badge').classList.remove('hidden');
-            } else {
-                document.getElementById('modal-reg-price').classList.add('hidden');
-                document.getElementById('modal-discount-badge').classList.add('hidden');
-            }
+                document.getElementById('modal-img-main').src = p.img;
+                document.getElementById('modal-cat').innerText = p.category ? p.category.replace(/_/g, ' ') : '';
+                document.getElementById('modal-title').innerText = p.name;
+                document.getElementById('modal-desc').innerText = p.description || 'বিস্তারিত শীঘ্রই আসছে...';
+                document.getElementById('modal-price').innerText = '৳' + p.price;
 
-            // Thumbnails
-            const thumbs = document.getElementById('modal-thumbnails');
-            thumbs.innerHTML = '';
-            [p.img, p.img2, p.img3].filter(Boolean).forEach((img, i) => { // Support up to 3 images
-                thumbs.innerHTML += `<img src="${img}" onclick="changeModalImg(this.src)" class="w-14 h-14 md:w-16 md:h-16 rounded-md border border-gray-200 cursor-pointer hover:border-[#006D5B] object-cover transition ${i === 0 ? 'border-[#006D5B] ring-1 ring-[#006D5B]' : ''}">`;
-            });
+                const regPrice = p.regular_price || p.price;
+                const discount = Math.round(((regPrice - p.price) / regPrice) * 100);
 
-            document.getElementById('modal-add-btn').onclick = () => { addToCart(p.id); closeProductModal(); };
-            document.getElementById('product-modal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+                const regEl = document.getElementById('modal-reg-price');
+                const badgeEl = document.getElementById('modal-discount-badge');
+
+                if (discount > 0) {
+                    if (regEl) { regEl.innerText = '৳' + regPrice; regEl.classList.remove('hidden'); }
+                    if (badgeEl) { badgeEl.innerText = `SAVE ${discount}% `; badgeEl.classList.remove('hidden'); }
+                } else {
+                    if (regEl) regEl.classList.add('hidden');
+                    if (badgeEl) badgeEl.classList.add('hidden');
+                }
+
+                // Thumbnails
+                const thumbs = document.getElementById('modal-thumbnails');
+                if (thumbs) {
+                    thumbs.innerHTML = '';
+                    [p.img, p.img2, p.img3].filter(Boolean).forEach((img, i) => {
+                        thumbs.innerHTML += `<img src="${img}" onclick="changeModalImg(this.src)" class="w-14 h-14 md:w-16 md:h-16 rounded-md border border-gray-200 cursor-pointer hover:border-[#006D5B] object-cover transition ${i === 0 ? 'border-[#006D5B] ring-1 ring-[#006D5B]' : ''}">`;
+                    });
+                }
+
+                const addBtn = document.getElementById('modal-add-btn');
+                if (addBtn) addBtn.onclick = () => { addToCart(p.id); closeProductModal(); };
+
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } catch (err) { console.error("Modal Error:", err); }
         }
 
         function closeProductModal() {
-            document.getElementById('product-modal').classList.add('hidden');
+            const m = document.getElementById('product-modal');
+            if (m) m.classList.add('hidden');
             document.body.style.overflow = 'auto';
         }
 
@@ -595,29 +617,40 @@
         updateCartUI();
 
         function addToCart(id) {
-            const product = allProducts.find(p => p.id == id);
-            if (product) {
-                cart.push(product);
-                // Pixel AddToCart
-                try {
-                    fbq('track', 'AddToCart', {
-                        content_ids: [product.id],
-                        content_type: 'product',
-                        value: product.price,
-                        currency: 'BDT',
-                        content_name: product.name
-                    });
-                } catch (e) { console.warn("Pixel Error:", e); }
-                localStorage.setItem('cart', JSON.stringify(cart));
-                updateCartUI();
+            console.log("addToCart Index called ID:", id); // DEBUG
+            try {
+                const product = allProducts.find(p => p.id == id);
+                console.log("Product found:", product); // DEBUG
+                if (product) {
+                    cart.push(product);
+                    // Pixel AddToCart
+                    try {
+                        if (typeof fbq === 'function') {
+                            fbq('track', 'AddToCart', {
+                                content_ids: [product.id],
+                                content_type: 'product',
+                                value: product.price,
+                                currency: 'BDT',
+                                content_name: product.name
+                            });
+                        }
+                    } catch (e) { console.warn("Pixel Error:", e); }
 
-                // Professional Toast
-                const Toast = Swal.mixin({
-                    toast: true, position: 'top-end', showConfirmButton: false, timer: 1500, timerProgressBar: true,
-                    didOpen: (toast) => { toast.onmouseenter = Swal.stopTimer; toast.onmouseleave = Swal.resumeTimer; }
-                });
-                Toast.fire({ icon: 'success', title: 'কার্টে যোগ হয়েছে' });
-            }
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateCartUI();
+
+                    // Professional Toast
+                    if (typeof Swal !== 'undefined') {
+                        const Toast = Swal.mixin({
+                            toast: true, position: 'top-end', showConfirmButton: false, timer: 1500, timerProgressBar: true,
+                            didOpen: (toast) => { toast.onmouseenter = Swal.stopTimer; toast.onmouseleave = Swal.resumeTimer; }
+                        });
+                        Toast.fire({ icon: 'success', title: 'কার্টে যোগ হয়েছে' });
+                    } else {
+                        alert('কার্টে যোগ হয়েছে');
+                    }
+                }
+            } catch (err) { console.error("Cart Error:", err); }
         }
 
         function removeFromCart(index) { cart.splice(index, 1); localStorage.setItem('cart', JSON.stringify(cart)); updateCartUI(); }
