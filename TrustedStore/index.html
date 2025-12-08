@@ -333,30 +333,31 @@
                     class="fas fa-times text-gray-500"></i></button>
 
             <!-- Image Section -->
-            <div class="w-full md:w-5/12 bg-gray-100 p-6 md:p-10 flex flex-col justify-center relative items-center">
+            <div
+                class="w-full md:w-5/12 bg-gray-100 p-4 md:p-10 flex flex-col justify-center relative items-center shrink-0">
                 <div
-                    class="w-full h-[300px] md:h-[400px] bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 flex items-center justify-center p-4">
+                    class="w-full h-[220px] md:h-[400px] bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 flex items-center justify-center p-4">
                     <img id="modal-img-main" src="" class="max-w-full max-h-full object-contain">
                 </div>
-                <div class="flex gap-3 justify-center mt-6 overflow-x-auto w-full px-2" id="modal-thumbnails">
-                    <!-- Thumbnails injected by JS -->
-                </div>
+                <div class="flex gap-3 justify-start md:justify-center mt-4 md:mt-6 overflow-x-auto w-full px-2 scrollbar-hide"
+                    id="modal-thumbnails"></div>
             </div>
 
             <!-- Details Section -->
-            <div class="w-full md:w-7/12 p-6 md:p-12 overflow-y-auto flex flex-col h-[60vh] md:h-auto custom-scrollbar">
-                <div class="flex justify-between items-start mb-4">
+            <div
+                class="w-full md:w-7/12 p-5 md:p-12 flex flex-col flex-1 min-h-0 overflow-y-auto custom-scrollbar relative">
+                <div class="flex justify-between items-start mb-3">
                     <span id="modal-cat"
-                        class="text-xs font-bold text-[#006D5B] bg-[#006D5B]/10 px-3 py-1.5 rounded-full uppercase tracking-wider">Category</span>
+                        class="text-xs font-bold text-[#006D5B] bg-[#006D5B]/10 px-3 py-1 rounded-full uppercase tracking-wider">Category</span>
                     <button onclick="closeProductModal()"
                         class="hidden md:flex w-10 h-10 hover:bg-gray-100 rounded-full items-center justify-center transition duration-300 transform hover:rotate-90"><i
                             class="fas fa-times text-gray-400 text-lg"></i></button>
                 </div>
 
-                <h2 id="modal-title" class="text-2xl md:text-4xl font-bold text-gray-800 mb-3 leading-tight font-hind">
+                <h2 id="modal-title" class="text-2xl md:text-4xl font-bold text-gray-800 mb-2 leading-tight font-hind">
                     Product Title</h2>
 
-                <div class="flex items-center gap-4 mb-2">
+                <div class="flex items-center gap-3 mb-4">
                     <span id="modal-price" class="text-3xl md:text-4xl font-bold theme-text">৳0</span>
                     <div class="flex flex-col leading-none">
                         <span id="modal-reg-price"
@@ -365,18 +366,16 @@
                     </div>
                 </div>
 
-                <div class="w-full h-px bg-gray-100 my-6"></div>
+                <div class="w-full h-px bg-gray-100 mb-4 md:my-6"></div>
 
-                <div
-                    class="prose prose-sm md:prose-base text-gray-600 mb-8 flex-1 overflow-y-auto max-h-[200px] pr-2 custom-scrollbar">
+                <div class="prose prose-sm md:prose-base text-gray-600 mb-6 flex-1">
                     <p id="modal-desc" class="leading-relaxed whitespace-pre-line text-base">Product description...</p>
                 </div>
 
-                <div class="mt-auto pt-4 space-y-4">
+                <div class="mt-auto pt-2 space-y-3 md:space-y-4 pb-2">
                     <button id="modal-add-btn"
-                        class="w-full theme-bg text-white py-4 rounded-xl font-bold hover:bg-[#005a4b] transition shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-lg btn-press transform active:scale-95 duration-200">
-                        <i class="fas fa-shopping-bag"></i> কার্টে যোগ করুন
-                    </button>
+                        class="w-full theme-bg text-white py-4 rounded-xl font-bold hover:bg-[#005a4b] transition shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-lg btn-press transform active:scale-95 duration-200"><i
+                            class="fas fa-shopping-bag"></i> কার্টে যোগ করুন</button>
 
                     <div
                         class="grid grid-cols-2 gap-4 text-xs font-bold text-gray-500 bg-gray-50 p-4 rounded-lg border border-gray-100">
@@ -396,6 +395,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    </div>
     </div>
 
     <script>
