@@ -66,6 +66,25 @@
             }
         }
     </style>
+    <!-- Meta Pixel Code -->
+    <script>
+        !function (f, b, e, v, n, t, s) {
+            if (f.fbq) return; n = f.fbq = function () {
+                n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+            n.queue = []; t = b.createElement(e); t.async = !0;
+            t.src = v; s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1505904560492063');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=1505904560492063&ev=PageView&noscript=1" /></noscript>
+    <!-- End Meta Pixel Code -->
 </head>
 
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
@@ -347,6 +366,15 @@
             const p = allProducts.find(x => x.id == id);
             if (!p) return;
 
+            // Pixel ViewContent
+            fbq('track', 'ViewContent', {
+                content_ids: [p.id],
+                content_type: 'product',
+                value: p.price,
+                currency: 'BDT',
+                content_name: p.name
+            });
+
             document.getElementById('modal-img-main').src = p.img;
             document.getElementById('modal-cat').innerText = p.category ? p.category.replace(/_/g, ' ') : '';
             document.getElementById('modal-title').innerText = p.name;
@@ -400,6 +428,13 @@
                     currentCategory.toLowerCase();
                 return matchesName && matchesCat;
             });
+
+
+            // Pixel Search (if query exists)
+            if (searchText.length > 1) {
+                fbq('track', 'Search', { search_string: searchText });
+            }
+
             renderProducts(filtered);
         }
 
@@ -419,6 +454,14 @@
             const product = allProducts.find(p => p.id == id);
             if (product) {
                 cart.push(product);
+                // Pixel AddToCart
+                fbq('track', 'AddToCart', {
+                    content_ids: [product.id],
+                    content_type: 'product',
+                    value: product.price,
+                    currency: 'BDT',
+                    content_name: product.name
+                });
                 localStorage.setItem('cart', JSON.stringify(cart));
                 updateCartUI();
                 const Toast = Swal.mixin({
