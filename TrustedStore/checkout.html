@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অর্ডার কনফার্ম করুন</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+
+        .theme-bg {
+            background-color: #006D5B;
+        }
+
+        .theme-text {
+            color: #006D5B;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+    <nav class="bg-white shadow-sm py-5 mb-8 border-b border-gray-100">
+        <div class="container mx-auto px-4 text-center">
+            <a href="index.html" class="text-2xl font-bold theme-text">চেকআউট</a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 pb-20 max-w-5xl fade-in">
+        <div class="flex flex-col lg:flex-row gap-8">
+
+            <!-- Left Side: Form -->
+            <div class="w-full lg:w-2/3">
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                    <h2 class="text-xl font-bold mb-6 border-b pb-3 theme-text flex items-center gap-2">
+                        <span
+                            class="bg-[#006D5B]/10 w-8 h-8 rounded-full flex items-center justify-center text-sm">১</span>
+                        আপনার তথ্য দিন
+                    </h2>
+                    <form id="order-form" class="space-y-4">
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-2 text-sm">আপনার নাম</label>
+                            <input type="text" id="cus_name" placeholder="পুরো নাম"
+                                class="w-full border border-gray-200 p-3.5 rounded-lg focus:outline-none focus:border-[#006D5B] bg-gray-50/50 transition"
+                                required>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-2 text-sm">মোবাইল নাম্বার (১১ ডিজিট)</label>
+                            <input type="tel" id="cus_phone" placeholder="017xxxxxxxx" pattern="[0-9]{11}"
+                                maxlength="11"
+                                class="w-full border border-gray-200 p-3.5 rounded-lg focus:outline-none focus:border-[#006D5B] bg-gray-50/50 transition"
+                                required>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-2 text-sm">সম্পূর্ণ ঠিকানা</label>
+                            <textarea id="cus_address" placeholder="বাসা নং, রোড নং, এলাকা..."
+                                class="w-full border border-gray-200 p-3.5 rounded-lg focus:outline-none focus:border-[#006D5B] bg-gray-50/50 transition resize-none"
+                                rows="3" required></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2 text-sm">ডেলিভারি এলাকা</label>
+                            <select id="location" onchange="updateTotal()"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#006D5B] focus:ring-1 focus:ring-[#006D5B] outline-none transition text-sm bg-white cursor-pointer">
+                                <option value="70">ঢাকার ভিতরে (৭০ টাকা)</option>
+                                <option value="120">ঢাকার বাইরে (১২০ টাকা)</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Payment Warning & Info -->
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-sm mb-6">
+                    <div class="flex gap-3">
+                        <i class="fas fa-exclamation-circle text-red-500 mt-1"></i>
+                        <div class="text-sm space-y-2">
+                            <p class="font-bold text-red-700">গুরুত্বপূর্ণ নোটিশ:</p>
+                            <p class="text-gray-700">অর্ডার কনফার্ম করার জন্য ডেলিভারি চার্জ অগ্রিম প্রদান করতে হবে।</p>
+                            <ul class="list-disc ml-4 text-gray-600 space-y-1 mt-1">
+                                <li>ঢাকার ভিতরে: <span class="font-bold text-gray-800">৭০ টাকা</span></li>
+                                <li>ঢাকার বাইরে: <span class="font-bold text-gray-800">১২০ টাকা</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#006D5B]/5 p-4 rounded-xl border border-[#006D5B]/20">
+                    <h4 class="font-bold text-[#006D5B] mb-3 flex items-center gap-2 text-sm"><i
+                            class="fas fa-wallet"></i> পেমেন্ট মেথড</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_-MTKeBKVsB2RoYcbrm3OCwVSK_8Ux0bOzg&s" class="h-8 w-auto">
+                            <div>
+                                <p class="font-bold text-gray-800 text-sm">বিকাশ পার্সোনাল</p>
+                                <p class="text-gray-600 text-sm tracking-widest font-mono select-all cursor-pointer hover:text-[#006D5B]"
+                                    onclick="navigator.clipboard.writeText('01723965511'); Swal.fire({icon: 'success', title: 'কপি হয়েছে!', toast: true, position: 'top-end', showConfirmButton: false, timer: 1000});">
+                                    01723965511 <i class="fas fa-copy text-xs ml-1 text-gray-400"></i></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+                            <img src="data:image/jpeg;base64,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"
+                                class="h-8 w-auto">
+                            <div>
+                                <p class="font-bold text-gray-800 text-sm">নগদ পার্সোনাল</p>
+                                <p class="text-gray-600 text-sm tracking-widest font-mono select-all cursor-pointer hover:text-[#006D5B]"
+                                    onclick="navigator.clipboard.writeText('01723965511'); Swal.fire({icon: 'success', title: 'কপি হয়েছে!', toast: true, position: 'top-end', showConfirmButton: false, timer: 1000});">
+                                    01723965511 <i class="fas fa-copy text-xs ml-1 text-gray-400"></i></p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 text-center mt-2">টাকা পাঠানোর পর নিচের বাটনে ক্লিক করে অর্ডার
+                            কনফার্ম করুন। আমরা আপনাকে কল করে বিস্তারিত জানাবো।</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Order Summary -->
+            <div class="w-full lg:w-1/3">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 sticky top-6">
+                    <h2 class="text-lg font-bold mb-4 text-gray-800">অর্ডার সামারি</h2>
+                    <div id="cart-items" class="space-y-4 mb-6 max-h-64 overflow-y-auto pr-2"></div>
+
+                    <div class="border-t border-gray-100 pt-4 space-y-2 text-gray-600 text-sm">
+                        <div class="flex justify-between"><span>পণ্যের দাম</span><span id="subtotal"
+                                class="font-bold text-gray-800">৳0</span></div>
+                        <div class="flex justify-between"><span>ডেলিভারি চার্জ</span><span id="delivery-fee"
+                                class="font-bold text-gray-800">৳70</span></div>
+                        <div class="flex justify-between font-bold text-xl theme-text border-t pt-2 mt-2">
+                            <span>সর্বমোট</span><span id="grand-total">৳0</span></div>
+                    </div>
+
+                    <button onclick="placeOrder()" id="order-btn"
+                        class="w-full theme-bg text-white py-4 rounded-xl mt-6 font-bold hover:bg-[#005a4b] transition shadow-lg text-lg flex justify-center items-center gap-2">
+                        <span>অর্ডার কনফার্ম করুন</span> <i class="fas fa-check-circle"></i>
+                    </button>
+                    <p class="text-center text-xs text-gray-400 mt-2">ক্যাশ অন ডেলিভারি প্রযোজ্য</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwzAFmcBJZNoii1G7pQZ2lPFBRQ-vRgdm872Wx9ilAyv5Q6GitmG9XufQJl_zlmxCRb/exec';
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            let subtotal = 0;
+            if (cart.length === 0) {
+                container.innerHTML = "<p class='text-red-400 text-center py-4 text-sm'>কোনো পণ্য নেই!</p>";
+                document.getElementById('order-btn').disabled = true;
+            } else {
+                document.getElementById('order-btn').disabled = false;
+                container.innerHTML = "";
+                cart.forEach((item, index) => {
+                    subtotal += parseInt(item.price);
+                    container.innerHTML += `<div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-100"><div class="flex items-center gap-3"><img src="${item.img}" class="w-12 h-12 rounded-md object-cover border" onerror="this.src='https://via.placeholder.com/50'"><div><p class="text-sm font-bold text-gray-800 line-clamp-1 w-32">${item.name}</p><p class="text-xs theme-text font-bold">৳${item.price}</p></div></div><button onclick="removeItem(${index})" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times"></i></button></div>`;
+                });
+            }
+            document.getElementById('subtotal').innerText = '৳' + subtotal;
+            updateTotal();
+        }
+
+        function updateTotal() {
+            let subtotal = 0; cart.forEach(i => subtotal += parseInt(i.price));
+
+            // Replaced radio button logic with select dropdown
+            const locationSelect = document.getElementById('location');
+            const d = parseInt(locationSelect.value);
+
+            document.getElementById('delivery-fee').innerText = '৳' + d;
+            document.getElementById('grand-total').innerText = '৳' + (subtotal + d);
+        }
+
+        function removeItem(i) { cart.splice(i, 1); localStorage.setItem('cart', JSON.stringify(cart)); renderCart(); }
+
+        function placeOrder() {
+            if (cart.length === 0) { Swal.fire('Error', 'কার্ট খালি!', 'error'); return; }
+            const name = document.getElementById('cus_name').value.trim();
+            const phone = document.getElementById('cus_phone').value.trim();
+            const address = document.getElementById('cus_address').value.trim();
+
+            if (!name || !phone || !address) { Swal.fire('Warning', 'সব তথ্য পূরণ করুন', 'warning'); return; }
+            if (!/^\d{11}$/.test(phone)) { Swal.fire('Invalid Phone', 'সঠিক ১১ ডিজিটের মোবাইল নাম্বার দিন', 'error'); return; }
+
+            const btn = document.getElementById('order-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<span class="loader"></span> প্রসেসিং...`;
+            btn.disabled = true;
+
+            let subtotal = 0; cart.forEach(i => subtotal += parseInt(i.price));
+            const locationSelect = document.getElementById('location');
+            const dCharge = parseInt(locationSelect.value); // Updated
+            const total = subtotal + dCharge;
+            const dMethod = locationSelect.options[locationSelect.selectedIndex].text; // Updated text
+            const items = cart.map(i => `${i.name} (৳${i.price})`).join(", ");
+
+            const orderData = {
+                action: 'order',
+                name: name,
+                phone: phone,
+                address: address + ` (${dMethod})`,
+                items: items,
+                total: total
+            };
+
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify(orderData) })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        localStorage.removeItem('cart');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'অর্ডার সফল!',
+                            text: 'শীঘ্রই আমাদের প্রতিনিধি যোগাযোগ করবেন।',
+                            confirmButtonText: 'হোমে ফিরে যান',
+                            confirmButtonColor: '#006D5B'
+                        }).then(() => { window.location.href = 'index.html'; });
+                    } else { throw new Error("Server Error"); }
+                })
+                .catch(err => {
+                    console.error(err);
+                    Swal.fire('Error', 'নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।', 'error');
+                })
+                .finally(() => { btn.innerHTML = originalText; btn.disabled = false; });
+        }
+        renderCart();
+    </script>
+</body>
+
+</html>
