@@ -87,9 +87,102 @@
             </div>
         </div>
     </nav>
-    class="flex flex-col items-center justify-center text-gray-500 hover:text-[#006D5B] gap-1"><i
-        class="fas fa-user text-xl"></i><span class="text-[10px] font-medium">অ্যাকাউন্ট</span></a>
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-6 md:py-10 fade-in min-h-[60vh]">
+        <!-- Header & Search -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800"><i class="fas fa-boxes text-[#006D5B] mr-2"></i>সকল
+                পণ্য <span id="showing-count" class="text-lg text-gray-500 font-medium ml-2">(0)</span></h1>
+
+            <div class="w-full md:w-96 relative">
+                <input type="text" id="search-input" oninput="filterProducts()" placeholder="পণ্য খুঁজুন..."
+                    class="w-full pl-10 pr-4 py-3 rounded-full border border-gray-200 focus:border-[#006D5B] focus:ring-2 focus:ring-[#006D5B]/20 outline-none transition shadow-sm">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="flex gap-3 overflow-x-auto pb-4 mb-6 scrollbar-hide">
+            <button onclick="filterByCategory('all')"
+                class="category-btn whitespace-nowrap px-6 py-2 rounded-full font-bold text-sm transition category-active ring-1 ring-[#006D5B]">সব</button>
+            <button onclick="filterByCategory('mushroom')"
+                class="category-btn whitespace-nowrap px-6 py-2 rounded-full font-bold text-sm bg-white text-gray-600 border border-gray-200 hover:border-[#006D5B] hover:text-[#006D5B] transition">মাশরুম</button>
+            <button onclick="filterByCategory('cosmetics')"
+                class="category-btn whitespace-nowrap px-6 py-2 rounded-full font-bold text-sm bg-white text-gray-600 border border-gray-200 hover:border-[#006D5B] hover:text-[#006D5B] transition">কসমেটিকস</button>
+            <button onclick="filterByCategory('supplements')"
+                class="category-btn whitespace-nowrap px-6 py-2 rounded-full font-bold text-sm bg-white text-gray-600 border border-gray-200 hover:border-[#006D5B] hover:text-[#006D5B] transition">সাপ্লিমেন্ট</button>
+            <button onclick="filterByCategory('daily')"
+                class="category-btn whitespace-nowrap px-6 py-2 rounded-full font-bold text-sm bg-white text-gray-600 border border-gray-200 hover:border-[#006D5B] hover:text-[#006D5B] transition">নিত্যপ্রয়োজনীয়</button>
+        </div>
+
+        <!-- Grid -->
+        <div id="grid-loader" class="spinner"></div>
+        <div id="all-products-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6 hidden">
+            <!-- Items injected by JS -->
+        </div>
+        <div id="no-products-msg" class="hidden text-center py-20">
+            <div class="text-gray-300 mb-4"><i class="fas fa-search text-6xl opacity-20"></i></div>
+            <h3 class="text-xl font-bold text-gray-500">কোন পণ্য পাওয়া যায়নি</h3>
+            <p class="text-gray-400">অন্য কিছু লিখে অনুসন্ধান করুন</p>
+        </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-black text-gray-400 py-12 border-t border-gray-800 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="space-y-4">
+                    <a href="#" class="flex items-center gap-2 mb-4">
+                        <div class="bg-white p-1 rounded-full"><img src="assests/logo.png" class="w-8 h-8"></div>
+                        <div>
+                            <span class="block text-xl font-bold text-white leading-none">TRUSTED</span>
+                            <span class="block text-xs font-bold text-gray-500">Online STORE</span>
+                        </div>
+                    </a>
+                    <div>
+                        <h4 class="text-white font-bold mb-1 text-sm"><i class="fas fa-phone-alt mr-2"></i> Phone Number
+                        </h4>
+                        <p class="text-sm">01567-884423</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-6 text-sm tracking-wider">LOCATION</h3>
+                    <ul class="space-y-5 text-sm">
+                        <li class="flex gap-3">
+                            <i class="fas fa-map-marker-alt text-orange-500 mt-1"></i>
+                            <div>
+                                <span class="block font-bold text-gray-300">Dhaka , Mirpur, Bangladesh</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div
+                class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <p>&copy; 2025 Trusted Store.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Nav -->
+    <div
+        class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-[0_-5px_10px_rgba(0,0,0,0.05)] z-50 md:hidden pb-safe">
+        <div class="grid grid-cols-4 h-16 items-center">
+            <a href="index.html"
+                class="flex flex-col items-center justify-center text-gray-500 hover:text-[#006D5B] gap-1 btn-press"><i
+                    class="fas fa-home text-xl"></i><span class="text-[10px] font-medium">হোম</span></a>
+            <a href="products.html" class="flex flex-col items-center justify-center text-[#006D5B] gap-1 btn-press"><i
+                    class="fas fa-search text-xl"></i><span class="text-[10px] font-bold">খুঁজুন</span></a>
+            <button onclick="toggleCart()"
+                class="flex flex-col items-center justify-center text-gray-500 hover:text-[#006D5B] gap-1 relative btn-press">
+                <div class="relative"><i class="fas fa-shopping-bag text-xl"></i><span id="mobile-cart-badge"
+                        class="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold h-4 w-4 flex items-center justify-center rounded-full border border-white">0</span>
+                </div><span class="text-[10px] font-medium">ব্যাগ</span>
+            </button>
+            <a href="contact.html"
+                class="flex flex-col items-center justify-center text-gray-500 hover:text-[#006D5B] gap-1 btn-press"><i
+                    class="fas fa-user text-xl"></i><span class="text-[10px] font-medium">অ্যাকাউন্ট</span></a>
+        </div>
     </div>
 
     <div id="mini-sticky-cart" onclick="toggleCart()"
