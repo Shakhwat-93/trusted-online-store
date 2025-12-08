@@ -140,6 +140,9 @@
                 <a href="#" onclick="showSection('products')"
                     class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition"><i
                         class="fas fa-box-open w-5"></i> প্রোডাক্ট</a>
+                <a href="#" onclick="showSection('hero')"
+                    class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition"><i
+                        class="fas fa-images w-5"></i> হিরো ইমেজ</a>
             </nav>
             <div class="p-4 border-t border-white/10">
                 <button onclick="doLogout()"
@@ -200,88 +203,116 @@
                     </div>
                 </div>
 
-                <div id="orders-section" class="hidden space-y-4 pb-20">
-                    <div class="bg-white p-3 md:p-4 rounded-xl shadow-sm border flex flex-col md:flex-row gap-3">
-                        <input type="text" id="orderSearchInput" onkeyup="searchOrders()"
-                            placeholder="অর্ডার খুঁজুন (নাম/ফোন)..."
-                            class="w-full border rounded-lg p-2.5 focus:outline-none focus:border-[#006D5B]">
-                        <button onclick="fetchOrders()"
-                            class="bg-gray-100 px-6 py-2.5 rounded-lg hover:bg-gray-200 font-medium whitespace-nowrap"><i
-                                class="fas fa-sync-alt mr-2"></i>রিফ্রেশ</button>
-                    </div>
-                    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left min-w-[600px]">
-                                <thead class="bg-gray-50 text-gray-500 text-xs uppercase border-b">
-                                    <tr>
-                                        <th class="p-4">তারিখ</th>
-                                        <th class="p-4">কাস্টমার</th>
-                                        <th class="p-4">অ্যাড্রেস</th>
-                                        <th class="p-4 text-right">টাকা</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="order-table-body" class="divide-y"></tbody>
-                            </table>
+                <!-- HERO SECTION -->
+                <div id="hero-section" class="hidden space-y-6 pb-20 fade-in">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                        <h3 class="font-bold text-gray-800 mb-4 text-lg">নতুন ছবি যোগ করুন</h3>
+                        <div class="flex gap-3">
+                            <input type="text" id="new-hero-url" placeholder="ছবির লিংক (URL) পেস্ট করুন..."
+                                class="flex-1 border p-3 rounded-xl focus:outline-none focus:border-[#006D5B] bg-gray-50">
+                            <button onclick="addHeroImage()"
+                                class="theme-bg text-white px-6 py-3 rounded-xl font-bold hover:bg-[#005a4b] transition shadow-lg"><i
+                                    class="fas fa-plus mr-2"></i> যোগ করুন</button>
                         </div>
-                        <div id="order-loader" class="py-12 flex justify-center hidden">
-                            <div class="loader"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="products-section" class="hidden space-y-5 pb-24">
-                    <div
-                        class="flex flex-col md:flex-row gap-3 bg-white p-4 rounded-xl shadow-sm border sticky top-0 z-10">
-                        <div class="flex-1">
-                            <input type="text" id="productSearchInput" onkeyup="searchProducts()"
-                                placeholder="পণ্যের নাম লিখুন..."
-                                class="w-full border rounded-lg p-2.5 focus:outline-none focus:border-[#006D5B]">
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="toggleSelectAll()" id="selectAllBtn"
-                                class="flex-1 md:flex-none px-4 py-2 border rounded-lg hover:bg-gray-100 text-sm font-medium whitespace-nowrap">সব
-                                সিলেক্ট</button>
-                            <button onclick="uploadProduct()"
-                                class="flex-1 md:flex-none theme-bg text-white px-5 py-2 rounded-lg font-bold text-sm shadow hover:opacity-90 whitespace-nowrap"><i
-                                    class="fas fa-plus mr-1"></i> নতুন</button>
-                        </div>
+                        <p class="text-xs text-gray-400 mt-2 ml-1"><i class="fas fa-info-circle"></i> হাই কোয়ালিটি
+                            ল্যান্ডস্কেপ ছবি ব্যবহার করুন (1600x600px)</p>
                     </div>
 
-                    <div id="product-loader" class="py-12 flex justify-center hidden">
-                        <div class="loader"></div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left min-w-[600px]">
-                                <thead class="bg-gray-50 text-gray-500 text-xs uppercase border-b">
-                                    <tr>
-                                        <th class="p-4 w-10">Select</th>
-                                        <th class="p-4 w-16">Image</th>
-                                        <th class="p-4">Name</th>
-                                        <th class="p-4">Price</th>
-                                        <th class="p-4 w-20">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="product-table-body" class="divide-y"></tbody>
-                            </table>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-gray-800 text-lg">হিরো ইমেজ গ্যালারি</h3>
+                            <button onclick="fetchHeroImages()"
+                                class="text-[#006D5B] hover:bg-[#006D5B]/10 p-2 rounded-full transition"><i
+                                    class="fas fa-sync-alt"></i></button>
                         </div>
-                    </div>
-
-                    <div id="bulk-action-bar"
-                        class="fixed bottom-6 left-4 right-4 md:left-1/2 md:w-auto md:transform md:-translate-x-1/2 bg-gray-800 text-white px-4 py-3 rounded-full shadow-2xl z-40 flex justify-between md:justify-center items-center gap-4 md:gap-8 translate-y-32 transition-transform duration-300">
-                        <span class="font-bold text-sm ml-2"><span id="selected-count">0</span> সিলেক্টেড</span>
-                        <div class="flex gap-3 items-center">
-                            <button onclick="bulkDelete()"
-                                class="bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded-full font-bold text-sm shadow">ডিলিট</button>
-                            <button onclick="clearSelection()"
-                                class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 text-gray-400 hover:text-white transition"><i
-                                    class="fas fa-times"></i></button>
+                        <div id="hero-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Injected JS -->
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
+
+            <div id="orders-section" class="hidden space-y-4 pb-20">
+                <div class="bg-white p-3 md:p-4 rounded-xl shadow-sm border flex flex-col md:flex-row gap-3">
+                    <input type="text" id="orderSearchInput" onkeyup="searchOrders()"
+                        placeholder="অর্ডার খুঁজুন (নাম/ফোন)..."
+                        class="w-full border rounded-lg p-2.5 focus:outline-none focus:border-[#006D5B]">
+                    <button onclick="fetchOrders()"
+                        class="bg-gray-100 px-6 py-2.5 rounded-lg hover:bg-gray-200 font-medium whitespace-nowrap"><i
+                            class="fas fa-sync-alt mr-2"></i>রিফ্রেশ</button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left min-w-[600px]">
+                            <thead class="bg-gray-50 text-gray-500 text-xs uppercase border-b">
+                                <tr>
+                                    <th class="p-4">তারিখ</th>
+                                    <th class="p-4">কাস্টমার</th>
+                                    <th class="p-4">অ্যাড্রেস</th>
+                                    <th class="p-4 text-right">টাকা</th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-table-body" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                    <div id="order-loader" class="py-12 flex justify-center hidden">
+                        <div class="loader"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="products-section" class="hidden space-y-5 pb-24">
+                <div class="flex flex-col md:flex-row gap-3 bg-white p-4 rounded-xl shadow-sm border sticky top-0 z-10">
+                    <div class="flex-1">
+                        <input type="text" id="productSearchInput" onkeyup="searchProducts()"
+                            placeholder="পণ্যের নাম লিখুন..."
+                            class="w-full border rounded-lg p-2.5 focus:outline-none focus:border-[#006D5B]">
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="toggleSelectAll()" id="selectAllBtn"
+                            class="flex-1 md:flex-none px-4 py-2 border rounded-lg hover:bg-gray-100 text-sm font-medium whitespace-nowrap">সব
+                            সিলেক্ট</button>
+                        <button onclick="uploadProduct()"
+                            class="flex-1 md:flex-none theme-bg text-white px-5 py-2 rounded-lg font-bold text-sm shadow hover:opacity-90 whitespace-nowrap"><i
+                                class="fas fa-plus mr-1"></i> নতুন</button>
+                    </div>
+                </div>
+
+                <div id="product-loader" class="py-12 flex justify-center hidden">
+                    <div class="loader"></div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left min-w-[600px]">
+                            <thead class="bg-gray-50 text-gray-500 text-xs uppercase border-b">
+                                <tr>
+                                    <th class="p-4 w-10">Select</th>
+                                    <th class="p-4 w-16">Image</th>
+                                    <th class="p-4">Name</th>
+                                    <th class="p-4">Price</th>
+                                    <th class="p-4 w-20">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-table-body" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="bulk-action-bar"
+                    class="fixed bottom-6 left-4 right-4 md:left-1/2 md:w-auto md:transform md:-translate-x-1/2 bg-gray-800 text-white px-4 py-3 rounded-full shadow-2xl z-40 flex justify-between md:justify-center items-center gap-4 md:gap-8 translate-y-32 transition-transform duration-300">
+                    <span class="font-bold text-sm ml-2"><span id="selected-count">0</span> সিলেক্টেড</span>
+                    <div class="flex gap-3 items-center">
+                        <button onclick="bulkDelete()"
+                            class="bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded-full font-bold text-sm shadow">ডিলিট</button>
+                        <button onclick="clearSelection()"
+                            class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 text-gray-400 hover:text-white transition"><i
+                                class="fas fa-times"></i></button>
+                    </div>
+                </div>
+            </div>
+    </div>
+    </main>
     </div>
 
     <script>
@@ -372,17 +403,18 @@
             }
             document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
             document.querySelector(`[onclick="showSection('${id}')"]`)?.classList.add('active');
-            ['dashboard', 'orders', 'products'].forEach(s => document.getElementById(s + '-section').classList.add('hidden'));
+            ['dashboard', 'orders', 'products', 'hero'].forEach(s => document.getElementById(s + '-section').classList.add('hidden'));
             document.getElementById(id + '-section').classList.remove('hidden');
-            const titles = { dashboard: 'ড্যাশবোর্ড', orders: 'অর্ডার লিস্ট', products: 'প্রোডাক্ট স্টক' };
+            const titles = { dashboard: 'ড্যাশবোর্ড', orders: 'অর্ডার লিস্ট', products: 'প্রোডাক্ট স্টক', hero: 'হিরো সেটিংস' };
             document.getElementById('page-title').innerText = titles[id];
 
             // Only fetch if data is empty to save calls, or if specifically needed
             if (id === 'orders' && allOrders.length === 0) fetchOrders();
             if (id === 'products' && allProducts.length === 0) fetchProducts();
+            if (id === 'hero') fetchHeroImages();
         }
 
-        function loadAll() { fetchOrders(); fetchProducts(); }
+        function loadAll() { fetchOrders(); fetchProducts(); fetchHeroImages(); }
 
         async function fetchOrders() {
             document.getElementById('order-loader').classList.remove('hidden');
@@ -586,6 +618,43 @@
             document.getElementById('total-products-count').innerText = allProducts.length;
             let t = 0; allOrders.forEach(r => t += parseInt(r[5]) || 0);
             document.getElementById('total-sales').innerText = '৳' + t.toLocaleString();
+        }
+        async function fetchHeroImages() {
+            try {
+                const res = await fetch(scriptURL + '?action=getHeroImages');
+                const data = await res.json();
+                renderHeroImages(Array.isArray(data) ? data : []);
+            } catch (e) { console.error(e); }
+        }
+
+        function renderHeroImages(images) {
+            const c = document.getElementById('hero-list');
+            c.innerHTML = '';
+            if (images.length === 0) {
+                c.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400"><i class="fas fa-images text-4xl mb-2"></i><p>কোনো ছবি নেই</p></div>`;
+                return;
+            }
+            images.forEach(img => {
+                c.innerHTML += `
+                <div class="relative group rounded-xl overflow-hidden shadow-sm border border-gray-100">
+                    <img src="${img.url}" class="w-full h-48 object-cover">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                        <button onclick="deleteHeroImage('${img.id}')" class="bg-white text-red-500 w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition shadow-lg"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function addHeroImage() {
+            const url = document.getElementById('new-hero-url').value;
+            if (!url) return Swal.fire('Warning', 'ছবির লিংক দিন', 'warning');
+            post({ action: 'addHeroImage', url: url }, 'ছবি যোগ হয়েছে!');
+            document.getElementById('new-hero-url').value = '';
+        }
+
+        function deleteHeroImage(id) {
+            Swal.fire({ title: 'মুছে ফেলবেন?', icon: 'warning', showCancelButton: true, confirmButtonText: 'হ্যাঁ', cancelButtonText: 'না' })
+                .then(r => { if (r.isConfirmed) post({ action: 'deleteHeroImage', id: id }, 'ডিলিট হয়েছে!'); });
         }
     </script>
 </body>

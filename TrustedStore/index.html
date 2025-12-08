@@ -115,13 +115,9 @@
         <div class="container mx-auto px-4">
             <div class="relative w-full h-[380px] md:h-[500px] rounded-2xl overflow-hidden shadow-xl group">
                 <!-- Carousel Container -->
+                <!-- Carousel Container -->
                 <div id="hero-carousel" class="flex transition-transform duration-700 h-full">
-                    <img src="https://images.unsplash.com/photo-1598449356475-b9f71db7d847?auto=format&fit=crop&q=80&w=1600"
-                        class="w-full h-full object-cover flex-shrink-0">
-                    <img src="https://images.unsplash.com/photo-1590159489229-23136208d087?auto=format&fit=crop&q=80&w=1600"
-                        class="w-full h-full object-cover flex-shrink-0">
-                    <img src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80&w=1600"
-                        class="w-full h-full object-cover flex-shrink-0">
+                    <!-- Images injected by JS -->
                 </div>
 
                 <!-- Overlay Text -->
@@ -151,12 +147,8 @@
                         class="fas fa-chevron-right"></i></button>
 
                 <!-- Dots -->
-                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                    <button onclick="setHero(0)" class="hero-dot w-2 h-2 rounded-full bg-white transition-all"></button>
-                    <button onclick="setHero(1)"
-                        class="hero-dot w-2 h-2 rounded-full bg-white/50 transition-all"></button>
-                    <button onclick="setHero(2)"
-                        class="hero-dot w-2 h-2 rounded-full bg-white/50 transition-all"></button>
+                <div id="hero-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                    <!-- Dots injected by JS -->
                 </div>
             </div>
 
@@ -410,6 +402,9 @@
                 allProducts = Array.isArray(data) ? data : [];
                 renderHomeProducts(allProducts);
 
+                // Fetch Hero Images
+                fetchHeroImages();
+
                 // Hide loaders and show content if they exist
                 if (document.getElementById('carousel-loader')) document.getElementById('carousel-loader').classList.add('hidden');
                 if (document.getElementById('grid-loader')) document.getElementById('grid-loader').classList.add('hidden');
@@ -466,13 +461,45 @@
 
         // --- Hero Logic ---
         let currentHero = 0;
+        let heroCount = 0;
+
+        async function fetchHeroImages() {
+            try {
+                const res = await fetch(scriptURL + '?action=getHeroImages');
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    renderHeroCarousel(data);
+                } else {
+                    // Fallback images if none configured
+                    const defaults = [
+                        { url: 'https://images.unsplash.com/photo-1598449356475-b9f71db7d847?auto=format&fit=crop&q=80&w=1600' },
+                        { url: 'https://images.unsplash.com/photo-1590159489229-23136208d087?auto=format&fit=crop&q=80&w=1600' },
+                        { url: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80&w=1600' }
+                    ];
+                    renderHeroCarousel(defaults);
+                }
+            } catch (e) { console.error("Hero error", e); }
+        }
+
+        function renderHeroCarousel(images) {
+            const h = document.getElementById('hero-carousel');
+            const d = document.getElementById('hero-dots');
+            h.innerHTML = '';
+            d.innerHTML = '';
+            heroCount = images.length;
+
+            images.forEach((img, i) => {
+                h.innerHTML += `<img src="${img.url}" class="w-full h-full object-cover flex-shrink-0" onerror="this.src='https://placehold.co/1600x600'">`;
+                d.innerHTML += `<button onclick="setHero(${i})" class="hero-dot w-2 h-2 rounded-full bg-white/50 transition-all ${i === 0 ? 'bg-white' : ''}"></button>`;
+            });
+        }
+
         const heroInterval = setInterval(() => moveHero('next'), 5000);
         function moveHero(dir) {
             const h = document.getElementById('hero-carousel');
-            if (!h) return;
+            if (!h || heroCount === 0) return;
             const dots = document.querySelectorAll('.hero-dot');
-            const total = 3;
-            currentHero = dir === 'next' ? (currentHero + 1) % total : (currentHero - 1 + total) % total;
+            currentHero = dir === 'next' ? (currentHero + 1) % heroCount : (currentHero - 1 + heroCount) % heroCount;
             h.style.transform = `translateX(-${currentHero * 100}%)`;
             dots.forEach((d, i) => i === currentHero ? d.classList.replace('bg-white/50', 'bg-white') : d.classList.replace('bg-white', 'bg-white/50'));
         }
