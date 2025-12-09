@@ -308,7 +308,17 @@
         async function fetchProducts() {
             try {
                 const response = await fetch(scriptURL + '?action=getProducts');
-                allProducts = await response.json();
+                const data = await response.json();
+
+                // Patch: Generate IDs if missing using product name for consistency
+                allProducts = data.map(p => {
+                    if (!p.id || p.id === "null") {
+                        // Create a simple slug from the name
+                        p.id = p.name ? p.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') : 'unknown_' + Math.random().toString(36).substr(2, 9);
+                    }
+                    return p;
+                });
+
                 console.log("All Products Data:", allProducts); // DEBUG: Inspect API response
                 if (allProducts.length > 0) {
                     console.log("First Product Keys:", Object.keys(allProducts[0])); // DEBUG: Check keys
