@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Trusted Store - হোম</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@rive-app/canvas@2.10.3"></script>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -91,6 +92,9 @@
     </style>
     <!-- Meta Pixel Code -->
     <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+
         !function (f, b, e, v, n, t, s) {
             if (f.fbq) return; n = f.fbq = function () {
                 n.callMethod ?
@@ -104,6 +108,7 @@
             'https://connect.facebook.net/en_US/fbevents.js');
         fbq('init', '1505904560492063');
         fbq('track', 'PageView');
+        dataLayer.push({ 'event': 'page_view' });
     </script>
     <noscript><img height="1" width="1" style="display:none"
             src="https://www.facebook.com/tr?id=1505904560492063&ev=PageView&noscript=1" /></noscript>
@@ -173,7 +178,7 @@
 
             <!-- Category Carousel -->
             <div class="mt-6 relative">
-                <div id="carousel-loader" class="spinner"></div>
+                <canvas id="carousel-loader" width="50" height="50" class="mx-auto my-5"></canvas>
                 <div id="carousel-container"
                     class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-1 snap-x hidden"></div>
             </div>
@@ -183,7 +188,7 @@
     <section class="bg-[#F8FAFC] py-10 fade-in-up" style="animation-delay: 0.4s;">
         <div class="container mx-auto px-4">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">জনপ্রিয় পণ্যসমূহ</h2>
-            <div id="grid-loader" class="spinner"></div>
+            <canvas id="grid-loader" width="50" height="50" class="mx-auto my-5"></canvas>
             <div id="product-list" class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 hidden"></div>
         </div>
     </section>
@@ -555,6 +560,17 @@
                             currency: 'BDT',
                             content_name: p.name
                         });
+                        dataLayer.push({
+                            'event': 'view_content',
+                            'ecommerce': {
+                                'items': [{
+                                    'item_id': p.id,
+                                    'item_name': p.name,
+                                    'price': p.price,
+                                    'currency': 'BDT'
+                                }]
+                            }
+                        });
                     }
                 } catch (e) { console.warn("Pixel Error:", e); }
 
@@ -634,6 +650,17 @@
                                 currency: 'BDT',
                                 content_name: product.name
                             });
+                            dataLayer.push({
+                                'event': 'add_to_cart',
+                                'ecommerce': {
+                                    'items': [{
+                                        'item_id': product.id,
+                                        'item_name': product.name,
+                                        'price': product.price,
+                                        'currency': 'BDT'
+                                    }]
+                                }
+                            });
                         }
                     } catch (e) { console.warn("Pixel Error:", e); }
 
@@ -680,6 +707,28 @@
         function closeCart() { document.getElementById('cart-drawer').classList.add('translate-x-full'); document.getElementById('cart-overlay').classList.add('hidden'); document.body.style.overflow = 'auto'; }
 
         fetchProducts();
+
+        // Rive Loaders
+        try {
+            const loaderUrl = 'https://cdn.rive.app/animations/vehicles.riv'; // Placeholder for high quality loader
+            // Initialize Carousel Loader
+            const cLoader = new rive.Rive({
+                src: loaderUrl,
+                canvas: document.getElementById('carousel-loader'),
+                autoplay: true,
+                stateMachines: "bumpy", // Using the 'bumpy' state machine from the vehicles demo
+                onLoad: () => { cLoader.resizeDrawingSurfaceToCanvas(); }
+            });
+
+            // Initialize Grid Loader
+            const gLoader = new rive.Rive({
+                src: loaderUrl,
+                canvas: document.getElementById('grid-loader'),
+                autoplay: true,
+                stateMachines: "bumpy",
+                onLoad: () => { gLoader.resizeDrawingSurfaceToCanvas(); }
+            });
+        } catch (e) { console.error("Rive Error", e); }
     </script>
 </body>
 

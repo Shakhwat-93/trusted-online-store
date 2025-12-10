@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Trusted Store - সব পণ্য</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@rive-app/canvas@2.10.3"></script>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -68,6 +69,9 @@
     </style>
     <!-- Meta Pixel Code -->
     <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+
         !function (f, b, e, v, n, t, s) {
             if (f.fbq) return; n = f.fbq = function () {
                 n.callMethod ?
@@ -81,6 +85,7 @@
             'https://connect.facebook.net/en_US/fbevents.js');
         fbq('init', '1505904560492063');
         fbq('track', 'PageView');
+        dataLayer.push({ 'event': 'page_view' });
     </script>
     <noscript><img height="1" width="1" style="display:none"
             src="https://www.facebook.com/tr?id=1505904560492063&ev=PageView&noscript=1" /></noscript>
@@ -135,7 +140,7 @@
         </div>
 
         <!-- Grid -->
-        <div id="grid-loader" class="spinner"></div>
+        <canvas id="grid-loader" width="50" height="50" class="mx-auto my-5"></canvas>
         <div id="all-products-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6 hidden">
             <!-- Items injected by JS -->
         </div>
@@ -325,7 +330,10 @@
                     console.log("First Product ID:", allProducts[0].id); // DEBUG: Check ID specifically
                 }
                 renderProducts(allProducts);
-                document.getElementById('grid-loader').classList.add('hidden');
+                // Hide Rive Loader (Canvas remains but we can hide it or stop it)
+                const loaderCanvas = document.getElementById('grid-loader');
+                if (loaderCanvas) loaderCanvas.classList.add('hidden');
+
                 document.getElementById('all-products-list').classList.remove('hidden');
             } catch (error) { console.error("Error:", error); }
         }
@@ -391,6 +399,17 @@
                             value: p.price,
                             currency: 'BDT',
                             content_name: p.name
+                        });
+                        dataLayer.push({
+                            'event': 'view_content',
+                            'ecommerce': {
+                                'items': [{
+                                    'item_id': p.id,
+                                    'item_name': p.name,
+                                    'price': p.price,
+                                    'currency': 'BDT'
+                                }]
+                            }
                         });
                     }
                 } catch (e) { console.warn("Pixel Error:", e); }
@@ -461,6 +480,10 @@
                 try {
                     if (typeof fbq === 'function') {
                         fbq('track', 'Search', { search_string: searchText });
+                        dataLayer.push({
+                            'event': 'search',
+                            'search_term': searchText
+                        });
                     }
                 } catch (e) { console.warn("Pixel Error:", e); }
             }
@@ -496,6 +519,17 @@
                                 value: product.price,
                                 currency: 'BDT',
                                 content_name: product.name
+                            });
+                            dataLayer.push({
+                                'event': 'add_to_cart',
+                                'ecommerce': {
+                                    'items': [{
+                                        'item_id': product.id,
+                                        'item_name': product.name,
+                                        'price': product.price,
+                                        'currency': 'BDT'
+                                    }]
+                                }
                             });
                         }
                     } catch (e) { console.warn("Pixel Error:", e); }
@@ -568,6 +602,19 @@
         }
 
         fetchProducts();
+
+        // Rive Loaders
+        try {
+            const loaderUrl = 'https://cdn.rive.app/animations/vehicles.riv'; // Placeholder for high quality loader
+            // Initialize Grid Loader
+            const gLoader = new rive.Rive({
+                src: loaderUrl,
+                canvas: document.getElementById('grid-loader'),
+                autoplay: true,
+                stateMachines: "bumpy",
+                onLoad: () => { gLoader.resizeDrawingSurfaceToCanvas(); }
+            });
+        } catch (e) { console.error("Rive Error", e); }
     </script>
 </body>
 
